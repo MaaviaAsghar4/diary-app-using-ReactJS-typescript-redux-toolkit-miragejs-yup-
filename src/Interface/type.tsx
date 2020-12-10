@@ -29,3 +29,8 @@ export interface AuthResponse {
   user: User;
   token: string;
 }
+
+export interface initStateAuth {
+  token: string | null;
+  isAuthenticated: boolean | null;
+}
