@@ -34,3 +34,9 @@ export interface initStateAuth {
   token: string | null;
   isAuthenticated: boolean | null;
 }
+
+export interface initStateEditor {
+  canEdit: boolean;
+  activeDiaryId: string | null;
+  currentlyEditing: Entry | null;
+}

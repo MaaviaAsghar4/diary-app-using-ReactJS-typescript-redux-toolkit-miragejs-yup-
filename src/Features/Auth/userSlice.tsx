@@ -3,12 +3,11 @@ import { User } from "../../Interface/type";
 
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    user: null as User | null,
-  },
+  initialState: null as User | null,
   reducers: {
-    setUser(state any, { payload }: PayloadAction<User | null>) {
-       return state = (payload !== null) ? payload : null;
+    setUser(state, { payload }: PayloadAction<User | null>) {
+      console.log(payload);
+      return (state = payload !== null ? payload : null);
     },
   },
 });

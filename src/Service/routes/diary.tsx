@@ -54,7 +54,7 @@ export const getDiaries = (schema: any, req: Request): Diary[] | Response => {
     const user = schema.users.find(req.params.id);
     return user.diary as Diary[];
   } catch (error) {
-    handleErrors(error, "Failed to get diaries at the moment");
+    return handleErrors(error, "Failed to get diaries at the moment");
   }
 };
 

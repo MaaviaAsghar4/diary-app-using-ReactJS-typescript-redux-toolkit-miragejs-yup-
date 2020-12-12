@@ -44,15 +44,15 @@ export const setupServer = (env?: string): Server => {
     },
 
     routes(): void {
-      (this.urlPrefix = "https://diaries.app"),
-        this.get("/diaries/entries/:id", diary.getEntries),
-        this.get("/diaries/:id", diary.getDiaries),
-        this.post("/diaries/", diary.create),
-        this.post("/diaries/entry/:id", diary.addEntry),
-        this.post("/auth/login", user.login),
-        this.post("/auth/signup", user.signup),
-        this.put("/diaries/entries/:id", diary.updateEntry),
-        this.put("/diaries/:id", diary.updateDiary);
+      this.urlPrefix = "https://diaries.app";
+      this.get("/diaries/entries/:id", diary.getEntries);
+      this.get("/diaries/:id", diary.getDiaries);
+      this.post("/diaries/", diary.create);
+      this.post("/diaries/entry/:id", diary.addEntry);
+      this.post("/auth/login", user.login);
+      this.post("/auth/signup", user.signup);
+      this.put("/diaries/entries/:id", diary.updateEntry);
+      this.put("/diaries/:id", diary.updateDiary);
     },
   });
 };
