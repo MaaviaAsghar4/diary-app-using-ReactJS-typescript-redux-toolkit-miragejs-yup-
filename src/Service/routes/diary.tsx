@@ -77,8 +77,8 @@ export const addEntry = (
       updatedAt: now,
     });
     return {
-      entry: entry.attrs as Entry,
-      diary: diary.attrs as Diary,
+      entry: entry.attrs,
+      diary: diary.attrs,
     };
   } catch (error) {
     return handleErrors(error, "failed to add entry");

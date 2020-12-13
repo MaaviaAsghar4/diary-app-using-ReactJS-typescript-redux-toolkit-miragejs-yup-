@@ -21,31 +21,31 @@ const Editor = () => {
   let [editedEntry, updateEditedEntry] = useState(entry);
   const dispatch = useAppDispatch();
 
-  const saveEntry = async (e: any) => {
-    e.preventDefault();
+  const saveEntry = async () => {
     if (activeDiaryId == null) {
       return showAlert("Please select a diary", "warning");
     }
     if (entry == null) {
+      console.log(activeDiaryId, editedEntry);
       http
-        .post<Entry, { diary: Diary; entry: Entry }>(
+        .post<Entry, { entry: Entry; diary: Diary }>(
           `/diaries/entry/${activeDiaryId}`,
           editedEntry
         )
-        .then((res) => {
-          if (res != null) {
-            const { diary, entry: _entry } = res;
+        .then((data) => {
+          if (data != null) {
+            const { diary, entry: _entry } = data;
             dispatch(setCurrentlyEditing(_entry));
             dispatch(updateDiary(diary));
           }
         });
     } else {
       http
-        .put<Entry, Entry>(`/diaries/entry/${entry?.id}`, editedEntry)
-        .then((res) => {
-          if (res != null) {
-            dispatch(setCurrentlyEditing(res));
-            dispatch(updateEntry(res));
+        .put<Entry, Entry>(`/diaries/entry/${entry.id}`, editedEntry)
+        .then((_entry) => {
+          if (_entry != null) {
+            dispatch(setCurrentlyEditing(_entry));
+            dispatch(updateEntry(_entry));
           }
         });
     }
@@ -58,34 +58,17 @@ const Editor = () => {
   return (
     <div style={{ width: "75vw" }}>
       <div className="mr-3 mt-5" style={{ width: "70vw" }}>
-        {!canEdit ? (
-          <Form>
-            <Form.Group controlId="formBasicText">
-              <Form.Label
-                className="mb-0"
-                style={{ fontSize: "0.9rem", fontWeight: "bold" }}
-              >
-                Title
-              </Form.Label>
-              <Form.Control
-                value={editedEntry?.title}
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  if (editedEntry) {
-                    updateEditedEntry({
-                      ...editedEntry,
-                      title: e.target.value,
-                    });
-                  }
-                }}
-                type="text"
-                placeholder="Enter Title"
-              />
-            </Form.Group>
-          </Form>
-        ) : (
+        {entry && !canEdit ? (
           <div className="d-flex align-items-center justify-content-around">
-            entry && <span>{entry?.title}</span>
+            <span
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {entry?.title}
+            </span>
             <span
               onClick={() => {
                 if (entry !== null) {
@@ -98,10 +81,33 @@ const Editor = () => {
               (Edit)
             </span>
           </div>
+        ) : (
+          <Form>
+            <Form.Group controlId="formBasicText">
+              <Form.Label
+                className="mb-0"
+                style={{ fontSize: "0.9rem", fontWeight: "bold" }}
+              >
+                Title
+              </Form.Label>
+              <Form.Control
+                value={editedEntry?.title}
+                onChange={(e) => {
+                  const newEntry: any = { ...editedEntry };
+                  newEntry.title = e.target.value;
+                  updateEditedEntry(newEntry);
+                }}
+                type="text"
+                placeholder="Enter Title"
+              />
+            </Form.Group>
+          </Form>
         )}
       </div>
       <div className="mr-3" style={{ width: "70vw" }}>
-        {!canEdit ? (
+        {entry && !canEdit ? (
+          <Markdown style={{ margin: "10px 20px" }}>{entry?.content}</Markdown>
+        ) : (
           <Form>
             <Form.Group controlId="exampleForm.ControlTextarea1">
               <Form.Label
@@ -118,19 +124,13 @@ const Editor = () => {
                 rows={10}
                 value={editedEntry?.content}
                 onChange={(e) => {
-                  console.log(e.target.value);
-                  if (editedEntry) {
-                    updateEditedEntry({
-                      ...editedEntry,
-                      content: e.target.value,
-                    });
-                  }
+                  const newEntry: any = { ...editedEntry };
+                  newEntry.content = e.target.value;
+                  updateEditedEntry(newEntry);
                 }}
               />
             </Form.Group>
           </Form>
-        ) : (
-          entry && <Markdown>{entry?.content}</Markdown>
         )}
       </div>
       <div className="text-center">

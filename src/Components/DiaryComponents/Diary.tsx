@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { Route } from "react-router-dom";
 import { setUser } from "../../Features/Auth/userSlice";
 import { addDiary } from "../../Features/Diary/diarySlice";
 import { Diary, User } from "../../Interface/type";
@@ -10,6 +9,7 @@ import { RootState } from "../../RootReducer";
 import http from "../../Service/api";
 import { useAppDispatch } from "../../store";
 import DiaryComponent from "./DiaryComponent";
+import { setAuthState } from "../../Features/Auth/authSlice";
 
 interface modalProp {
   show: boolean;
@@ -106,21 +106,27 @@ function MyVerticallyCenteredModal(props: modalProp) {
 const DiaryMain = () => {
   const [modalShow, setModalShow] = useState(false);
   const diaries = useSelector((state: RootState) => state.diary);
-
+  const dispatch = useAppDispatch();
+  const logout = () => {
+    dispatch(setAuthState(false));
+  };
   return (
     <div className="ml-3 mt-5" style={{ width: "25vw" }}>
-      <Route path="/">
+      <div className="d-flex align-items-center flex-column">
+        <Button variant="danger" className="mb-3" onClick={logout}>
+          Logout
+        </Button>
         <Button size="sm" onClick={() => setModalShow(true)}>
           Create New
         </Button>
-        <MyVerticallyCenteredModal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-        />
-        {diaries?.map((diary: Diary, idx: number) => {
-          return <DiaryComponent key={idx} diary={diary} />;
-        })}
-      </Route>
+      </div>
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
+      {diaries?.map((diary: Diary, idx: number) => {
+        return <DiaryComponent key={idx} diary={diary} />;
+      })}
     </div>
   );
 };
