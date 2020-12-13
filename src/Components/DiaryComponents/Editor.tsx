@@ -1,18 +1,60 @@
 import Markdown from "markdown-to-jsx";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { setCanEdit } from "../../Features/Entry/editorSlice";
-import { Entry } from "../../Interface/type";
+import { updateDiary } from "../../Features/Diary/diarySlice";
+import {
+  setCanEdit,
+  setCurrentlyEditing,
+} from "../../Features/Entry/editorSlice";
+import { updateEntry } from "../../Features/Entry/entrySlice";
+import { Diary, Entry } from "../../Interface/type";
 import { RootState } from "../../RootReducer";
+import http from "../../Service/api";
 import { useAppDispatch } from "../../store";
+import { showAlert } from "../../util";
 
 const Editor = () => {
-  const { activeDiaryId, canEdit, currentlyEditing } = useSelector(
+  const { activeDiaryId, canEdit, currentlyEditing: entry } = useSelector(
     (state: RootState) => state.editor
   );
-  let [editedEntry, updateEditedEntry] = useState(currentlyEditing);
+  let [editedEntry, updateEditedEntry] = useState(entry);
   const dispatch = useAppDispatch();
+
+  const saveEntry = async (e: any) => {
+    e.preventDefault();
+    if (activeDiaryId == null) {
+      return showAlert("Please select a diary", "warning");
+    }
+    if (entry == null) {
+      http
+        .post<Entry, { diary: Diary; entry: Entry }>(
+          `/diaries/entry/${activeDiaryId}`,
+          editedEntry
+        )
+        .then((res) => {
+          if (res != null) {
+            const { diary, entry: _entry } = res;
+            dispatch(setCurrentlyEditing(_entry));
+            dispatch(updateDiary(diary));
+          }
+        });
+    } else {
+      http
+        .put<Entry, Entry>(`/diaries/entry/${entry?.id}`, editedEntry)
+        .then((res) => {
+          if (res != null) {
+            dispatch(setCurrentlyEditing(res));
+            dispatch(updateEntry(res));
+          }
+        });
+    }
+    dispatch(setCanEdit(false));
+  };
+
+  useEffect(() => {
+    updateEditedEntry(entry);
+  }, [entry]);
   return (
     <div style={{ width: "75vw" }}>
       <div className="mr-3 mt-5" style={{ width: "70vw" }}>
@@ -28,6 +70,7 @@ const Editor = () => {
               <Form.Control
                 value={editedEntry?.title}
                 onChange={(e) => {
+                  console.log(e.target.value);
                   if (editedEntry) {
                     updateEditedEntry({
                       ...editedEntry,
@@ -42,10 +85,10 @@ const Editor = () => {
           </Form>
         ) : (
           <div className="d-flex align-items-center justify-content-around">
-            currentlyEditing && <span>{currentlyEditing?.title}</span>
+            entry && <span>{entry?.title}</span>
             <span
               onClick={() => {
-                if (currentlyEditing !== null) {
+                if (entry !== null) {
                   dispatch(setCanEdit(true));
                 }
               }}
@@ -73,7 +116,9 @@ const Editor = () => {
                 style={{ resize: "none" }}
                 as="textarea"
                 rows={10}
+                value={editedEntry?.content}
                 onChange={(e) => {
+                  console.log(e.target.value);
                   if (editedEntry) {
                     updateEditedEntry({
                       ...editedEntry,
@@ -85,11 +130,11 @@ const Editor = () => {
             </Form.Group>
           </Form>
         ) : (
-          currentlyEditing && <Markdown>{currentlyEditing?.content}</Markdown>
+          entry && <Markdown>{entry?.content}</Markdown>
         )}
       </div>
       <div className="text-center">
-        <Button variant="primary" type="submit">
+        <Button onClick={saveEntry} variant="primary" type="submit">
           Save Entry
         </Button>
       </div>

@@ -6,7 +6,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import store from "./store";
 import { Provider } from "react-redux";
 import { setupServer } from "./Service/server";
-import { env } from "process";
 
 if (process.env.NODE_ENV === "development") {
   setupServer();
