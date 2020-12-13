@@ -7,9 +7,11 @@ import store from "./store";
 import { Provider } from "react-redux";
 import { setupServer } from "./Service/server";
 
-if (process.env.NODE_ENV === "development") {
-  setupServer();
-}
+// if (process.env.NODE_ENV === "development") {
+//   setupServer();
+// }
+
+setupServer();
 
 ReactDOM.render(
   <React.StrictMode>

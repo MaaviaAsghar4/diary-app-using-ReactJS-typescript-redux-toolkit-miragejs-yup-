@@ -6,7 +6,7 @@ import Editor from "../DiaryComponents/Editor";
 
 const Home = () => {
   return (
-    <div>
+    <div style={{ height: "80vh" }}>
       <div className="d-flex align-items-start">
         <DiaryMain />
         <Editor />

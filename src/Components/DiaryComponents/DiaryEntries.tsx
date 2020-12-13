@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { RootState } from "../../RootReducer";
 import { useAppDispatch } from "../../store";
 import { Card, Col, Container, Row } from "react-bootstrap";
@@ -34,12 +34,15 @@ const DiaryEntries = () => {
   return (
     <div className="mt-5">
       <div>
+        <Link className="ml-3" to="/">
+          Add More Entries
+        </Link>
         {entry.map((entry) => {
           return (
             <Container key={entry.id}>
               <Row>
                 <Col xs={12} sm={6} md={4}>
-                  <Card>
+                  <Card className="mt-2">
                     <Card.Body>
                       <Card.Title>{entry.title}</Card.Title>
                       <Card.Text>
